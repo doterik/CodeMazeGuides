@@ -1,4 +1,8 @@
-﻿public class BankAccountTests
+﻿#pragma warning disable RCS1118 // Mark local variable as const.
+
+namespace Test;
+
+public class BankAccountTests
 {
     [Fact]
     public void GivenValidDepositAmount_WhenDepositCalled_ThenBalanceIncreased()

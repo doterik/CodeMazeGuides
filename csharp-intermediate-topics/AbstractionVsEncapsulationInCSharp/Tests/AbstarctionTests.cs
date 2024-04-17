@@ -1,4 +1,8 @@
-﻿public class AnimalTests
+﻿#pragma warning disable RCS1118 // Mark local variable as const.
+
+namespace Test;
+
+public class AnimalTests
 {
     [Fact]
     public void GivenDog_WhenMakeSoundCalled_ThenShouldPrintBark()

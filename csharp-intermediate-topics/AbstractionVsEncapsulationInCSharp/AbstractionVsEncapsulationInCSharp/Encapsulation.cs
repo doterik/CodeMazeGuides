@@ -1,37 +1,27 @@
-﻿public class BankAccount
-{
-    public string AccountNumber { get; }
-    public decimal Balance { get; private set; }
+﻿namespace Encapsulation;
 
-    public BankAccount(string accountNumber, decimal initialBalance = 0)
-    {
-        AccountNumber = accountNumber;
-        Balance = initialBalance;
-    }
+public class BankAccount(string accountNumber, decimal initialBalance = 0)
+{
+    public string AccountNumber { get; } = accountNumber;
+    public decimal Balance { get; private set; } = initialBalance;
 
     public void Deposit(decimal amount)
     {
-        if (amount > 0)
+        if (amount <= 0) Console.WriteLine("Invalid amount for deposit.");
+        else
         {
             Balance += amount;
             Console.WriteLine($"Deposit successful. New account balance: {Balance}");
-        }
-        else
-        {
-            Console.WriteLine("Invalid amount for deposit.");
         }
     }
 
     public void Withdraw(decimal amount)
     {
-        if (amount > 0 && amount <= Balance)
+        if (amount <= 0 || amount > Balance) Console.WriteLine("Invalid amount for withdrawal or insufficient funds.");
+        else
         {
             Balance -= amount;
             Console.WriteLine($"Withdrawal successful. New account balance: {Balance}");
-        }
-        else
-        {
-            Console.WriteLine("Invalid amount for withdrawal or insufficient funds.");
         }
     }
 }
