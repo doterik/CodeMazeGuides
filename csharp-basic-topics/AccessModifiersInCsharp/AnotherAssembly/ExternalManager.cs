@@ -1,16 +1,17 @@
-﻿using AccessModifiersInCsharp;
+﻿#pragma warning disable IDE0022 // Use expression body for method.
 
-namespace AnotherAssembly
+using AccessModifiersInCsharp;
+
+namespace AnotherAssembly;
+
+public class ExternalManager : Employee
 {
-    public class ExternalManager : Employee
+    public override string GetEmployeeDetails()
     {
-        public override string GetEmployeeDetails()
-        {
-            //EmployeeId = 3;
-            //Name = "David";
-            //Salary = 80000;
+        // EmployeeId = 3;
+        // Name = "David";
+        // Salary = 80000;
 
-            return $"ExternalManager Details: {base.GetEmployeeDetails()}";
-        }
+        return $"ExternalManager Details: {base.GetEmployeeDetails()}";
     }
 }

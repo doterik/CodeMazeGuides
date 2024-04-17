@@ -1,39 +1,33 @@
-﻿namespace AccessModifiersInCsharp
+﻿#pragma warning disable IDE0040 // Add accessibility modifiers.
+#pragma warning disable IDE0210 // Convert to top-level statements.
+#pragma warning disable RCS1102 // Make class static.
+#pragma warning disable S1118   // Utility classes should not have public constructors.
+
+namespace AccessModifiersInCsharp;
+
+class Program
 {
-    class Program
+    static void Main(/*string[] args*/)
     {
-        static void Main(string[] args)
-        {
-            var calculator = new Calculator();
+        var calculator = new Calculator { Value = 15 };
+        var result = calculator.IncrementValue(calculator.Value);
+        Console.WriteLine(result);
 
-            calculator.Value = 15;
-            var result = calculator.IncrementValue(calculator.Value);
+        var account = new BankAccount();
+        account.Deposit(100);
+        var balance = account.GetBalance();
+        Console.WriteLine(balance);
 
-            Console.WriteLine(result);
+        var rectangle = new Rectangle(10, 5);
+        var area = rectangle.GetArea();
+        Console.WriteLine(area);
 
-            var account = new BankAccount();
+        var logger = new Logger();
+        var messageLog = logger.LogMessage("This is a message");
+        Console.WriteLine(messageLog);
 
-            account.Deposit(100);
-            var balance = account.GetBalance();
-
-            Console.WriteLine(balance);
-
-            var rectangle = new Rectangle(10, 5);
-
-            var area = rectangle.GetArea();
-
-            Console.WriteLine(area);
-
-            var logger = new Logger();
-
-            var messageLog = logger.LogMessage("This is a message");
-
-            Console.WriteLine(messageLog);
-
-            var manager = new Manager();
-            var managerDetails = manager.GetEmployeeDetails();
-
-            Console.WriteLine(managerDetails);
-        }
+        var manager = new Manager();
+        var managerDetails = manager.GetEmployeeDetails();
+        Console.WriteLine(managerDetails);
     }
 }

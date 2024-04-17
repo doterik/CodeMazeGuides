@@ -1,13 +1,14 @@
-﻿using AccessModifiersInCsharp;
+﻿#pragma warning disable IDE0040 // Add accessibility modifiers.
 
-namespace Tests
+using AccessModifiersInCsharp;
+
+namespace Tests;
+
+class TestShape : Shape
 {
-    class TestShape : Shape
+    public TestShape(int width, int height)
     {
-        public TestShape(int width, int height)
-        {
-            Width = width;
-            Height = height;
-        }
+        Width = width;
+        Height = height;
     }
 }
