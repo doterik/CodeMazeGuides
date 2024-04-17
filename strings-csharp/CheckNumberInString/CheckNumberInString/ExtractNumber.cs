@@ -1,104 +1,105 @@
-﻿using System.Buffers;
+﻿#pragma warning disable MA0009 // Add regex evaluation timeout.
+#pragma warning disable SA1601 // Partial elements should be documented.
+
+using System.Buffers;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CheckNumberInString
+namespace CheckNumberInString;
+
+public static partial class ExtractNumber
 {
-    public static partial class ExtractNumber
+    // Define valid numerical characters including digits, minus sign, and decimal point.
+    private static readonly SearchValues<char> NumericSearchValues = SearchValues.Create(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.']);
+
+    [GeneratedRegex(@"(?:^|(?<=(?:\s|[^-\d])))-?\d+(?:\.\d+)?\b(?!-)")]
+    private static partial Regex NumberRegex();
+
+    public static string ExtractNumberUsingRegEx(string inputString)
     {
-        // Define valid numerical characters including digits, minus sign, and decimal point
-        private static readonly SearchValues<char> NumericSearchValues = SearchValues.Create(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.']);
+        var extractedNumbers = new List<double>();
 
-        [GeneratedRegex(@"-?\d+(\.\d+)?")]
-        private static partial Regex NumberRegex();
-
-        public static string ExtractNumberUsingRegEx(string inputString)
+        foreach (var value in NumberRegex().Matches(inputString).Select(match => match.Value))
         {
-            var extractedNumbers = new List<double>();
-
-            foreach (Match match in NumberRegex().Matches(inputString))
+            if (double.TryParse(value, CultureInfo.InvariantCulture, out var parsedNumber))
             {
-                if (double.TryParse(match.Value, out var parsedNumber))
-                {
-                    extractedNumbers.Add(parsedNumber);
-                }
+                extractedNumbers.Add(parsedNumber);
             }
-
-            return string.Join(",", extractedNumbers);
         }
-        
-        public static string ExtractNumbersUsingLinq(string inputString)
-        {
-            return string.Join(",", new string(inputString
-                .Where(c => char.IsBetween(c, '0', '9') || c == '.' || c == '-' || char.IsWhiteSpace(c))
-                .ToArray()).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
-        }
-        
-        public static string ExtractNumberUsingStringBuilder(string inputString)
-        {
-            var numbers = new List<double>();
-            var currentNumber = new StringBuilder();
-            var isInsideNumber = false;
 
-            foreach (var c in inputString)
+        return string.Join(';', extractedNumbers);
+    }
+
+    public static string ExtractNumbersUsingLinq(string inputString)
+        => string.Join(';', new string(inputString
+            .Where(c => char.IsBetween(c, '0', '9') || c == '.' || c == '-' || char.IsWhiteSpace(c))
+            .ToArray()).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+            .Where(s => !s.All(c => c == '.') && !s[1..].Any(c => c == '-')));
+
+    public static string ExtractNumberUsingStringBuilder(string inputString)
+    {
+        var numbers = new List<double>();
+        var currentNumber = new StringBuilder();
+        var isInsideNumber = false;
+
+        foreach (var c in inputString)
+        {
+            if (char.IsBetween(c, '0', '9') || c == '.' || c == '-')
             {
-                if (char.IsBetween(c, '0', '9') || c == '.' || c == '-')
-                {
-                    currentNumber.Append(c);
-                    isInsideNumber = true;
-                }
-                else if (isInsideNumber)
-                {
-                    AddNumberToList(currentNumber.ToString(), numbers);
-                    currentNumber.Clear();
-                    isInsideNumber = false;
-                }
+                _ = currentNumber.Append(c);
+                isInsideNumber = true;
             }
-
-            if (currentNumber.Length > 0)
+            else if (isInsideNumber)
             {
                 AddNumberToList(currentNumber.ToString(), numbers);
+                _ = currentNumber.Clear();
+                isInsideNumber = false;
             }
-
-            return string.Join(",", numbers);
         }
 
-        public static string ExtractNumberUsingSpan(string inputString)
+        if (currentNumber.Length > 0)
         {
-            var numbers = new List<double>();
-
-            var inputStringSpan = inputString.AsSpan();
-            while (true)
-            {
-                var startIndex = inputStringSpan.IndexOfAny(NumericSearchValues);
-                if (startIndex == -1)
-                    break;
-
-                inputStringSpan = inputStringSpan[startIndex..];
-
-                var endIndex = inputStringSpan.IndexOfAnyExcept(NumericSearchValues);
-                if (endIndex == -1)
-                {
-                    AddNumberToList(inputStringSpan, numbers);
-                    break;
-                }
-
-                AddNumberToList(inputStringSpan[..endIndex], numbers);
-                inputStringSpan = inputStringSpan[endIndex..];
-            }
-
-            return string.Join(",", numbers);
+            AddNumberToList(currentNumber.ToString(), numbers);
         }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void AddNumberToList(ReadOnlySpan<char> numberSpan, List<double> numbers)
+
+        return string.Join(';', numbers);
+    }
+
+    public static string ExtractNumberUsingSpan(string inputString)
+    {
+        var numbers = new List<double>();
+
+        var inputStringSpan = inputString.AsSpan();
+        while (true)
         {
-            if (double.TryParse(numberSpan, NumberStyles.Any, CultureInfo.InvariantCulture, out var number))
+            var startIndex = inputStringSpan.IndexOfAny(NumericSearchValues);
+            if (startIndex == -1)
+                break;
+
+            inputStringSpan = inputStringSpan[startIndex..];
+
+            var endIndex = inputStringSpan.IndexOfAnyExcept(NumericSearchValues);
+            if (endIndex == -1)
             {
-                numbers.Add(number);
+                AddNumberToList(inputStringSpan, numbers);
+                break;
             }
+
+            AddNumberToList(inputStringSpan[..endIndex], numbers);
+            inputStringSpan = inputStringSpan[endIndex..];
+        }
+
+        return string.Join(';', numbers);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AddNumberToList(ReadOnlySpan<char> numberSpan, List<double> numbers)
+    {
+        if (double.TryParse(numberSpan, NumberStyles.Any, CultureInfo.InvariantCulture, out var number))
+        {
+            numbers.Add(number);
         }
     }
 }
