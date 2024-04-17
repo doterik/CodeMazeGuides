@@ -6,8 +6,5 @@ namespace BaselineStylingInBenchmarkDotNet;
 
 public class StyleConfig : ManualConfig
 {
-    public StyleConfig()
-    {
-        SummaryStyle = SummaryStyle.Default.WithRatioStyle(RatioStyle.Trend);
-    }
+    public StyleConfig() => SummaryStyle = SummaryStyle.Default.WithRatioStyle(RatioStyle.Trend);
 }
